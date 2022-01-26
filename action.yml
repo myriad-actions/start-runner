@@ -1,0 +1,72 @@
+name: 'launch ec2 instance'
+description: > 
+  launch an on demande ec2 instance as github runner
+  following permissions are required
+    permissions:
+      id-token: write
+      contents: read
+inputs:
+  environment:
+    description: >-
+      one of the testbed, preprod or prod envinronment, for the workflow running
+    required: true
+  config-path:
+    description: >-
+      path to the ec2.yml file which stores the parameters for the instance creation
+    required: true
+  github-pat:
+    description: >-
+      GitHub personal access token
+    required: true
+    
+outputs:
+  label:
+    description: >-
+      Name of the unique label assigned to the runner.
+      The label is used in two cases:
+      - to use as the input of 'runs-on' property for the following jobs;
+      - to remove the runner from GitHub when it is not needed anymore.
+    value: ${{ steps.start-ec2-runner.outputs.label }}
+  ec2-instance-id:
+    description: >-
+      EC2 Instance Id of the created runner.
+      The id is used to terminate the EC2 instance when the runner is not needed anymore.
+    value: ${{ steps.start-ec2-runner.outputs.ec2-instance-id }}
+        
+runs:
+  using: "composite"
+  steps:  
+    - name: load variables
+      id: load-vars
+      uses: myriad-actions/load-variables@v1
+      with:
+        config-path: ${{ inputs.config-path }}
+    - name: Configure AWS credentials 
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ fromJson(steps.load-vars.outputs.vars).role-to-assume }}
+        aws-region: ${{ fromJson(steps.load-vars.outputs.vars).aws-region }}
+    - name: start ec2 runner
+      id: start-ec2-runner
+      uses: machulav/ec2-github-runner@v2
+      with:
+        mode: start
+        github-token: ${{ inputs.github-pat }}
+        ec2-image-id: ${{ fromJson(steps.load-vars.outputs.vars).ec2-image-id }}
+        ec2-instance-type: ${{ fromJson(steps.load-vars.outputs.vars).ec2-instance-type }}
+        iam-role-name: ${{ fromJson(steps.load-vars.outputs.vars).iam-role-name }}
+        subnet-id: ${{ fromJson(steps.load-vars.outputs.vars).subnet-id }}
+        security-group-id: ${{ fromJson(steps.load-vars.outputs.vars).security-group-id0 }}
+        aws-resource-tags:  > 
+          [
+            {"Key": "Component", "Value": "${{ fromJson(steps.load-vars.outputs.vars).Component }}"},
+            {"Key": "Name", "Value": "${{ fromJson(steps.load-vars.outputs.vars).Name }}-${{ github.run_id }}"},
+            {"Key": "role", "Value": "${{ fromJson(steps.load-vars.outputs.vars).role }}"},
+            {"Key": "Product", "Value": "${{ fromJson(steps.load-vars.outputs.vars).Product }}"},
+            {"Key": "Environment", "Value": " ${{ inputs.environment }}"},
+            {"Key": "CreateBy", "Value": "${{ fromJson(steps.load-vars.outputs.vars).CreateBy }}"},
+            {"Key": "GitHubRepository", "Value": "${{ github.repository }}"}
+          ]
+    - name: attach security groups
+      run: aws ec2 modify-instance-attribute --instance-id ${{ steps.start-ec2-runner.outputs.ec2-instance-id }} --groups ${{ fromJson(steps.load-vars.outputs.vars).security-group-id0 }} ${{ fromJson(steps.load-vars.outputs.vars).security-group-id1 }}
+      shell: bash 
