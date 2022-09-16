@@ -38,11 +38,11 @@ runs:
   steps:  
     - name: load variables
       id: load-vars
-      uses: myriad-actions/load-variables@v1
+      uses: myriad-actions/load-variables@main
       with:
         config-path: ${{ inputs.config-path }}
     - name: Configure AWS credentials 
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@master
       with:
         role-to-assume: ${{ fromJson(steps.load-vars.outputs.vars).role-to-assume }}
         aws-region: ${{ fromJson(steps.load-vars.outputs.vars).aws-region }}
