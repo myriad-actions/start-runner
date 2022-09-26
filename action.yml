@@ -14,6 +14,11 @@ inputs:
     description: >-
       path to the ec2.yml file which stores the parameters for the instance creation
     required: true
+  instance-type:
+    description: >-
+      aws instance type to be used 
+    required: false
+    default: 'micro'
   github-pat:
     description: >-
       GitHub personal access token
@@ -53,7 +58,7 @@ runs:
         mode: start
         github-token: ${{ inputs.github-pat }}
         ec2-image-id: ${{ fromJson(steps.load-vars.outputs.vars).ec2-image-id }}
-        ec2-instance-type: ${{ fromJson(steps.load-vars.outputs.vars).ec2-instance-type }}
+        ec2-instance-type: ${{ inputs.instance-type }}
         iam-role-name: ${{ fromJson(steps.load-vars.outputs.vars).iam-role-name }}
         subnet-id: ${{ fromJson(steps.load-vars.outputs.vars).subnet-id }}
         security-group-id: ${{ fromJson(steps.load-vars.outputs.vars).security-group-id0 }}
