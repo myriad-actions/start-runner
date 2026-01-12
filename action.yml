@@ -53,7 +53,7 @@ runs:
         aws-region: ${{ fromJson(steps.load-vars.outputs.vars).aws-region }}
     - name: start ec2 runner
       id: start-ec2-runner
-      uses: machulav/ec2-github-runner@v2
+      uses: machulav/ec2-github-runner@v2.4.2
       with:
         mode: start
         github-token: ${{ inputs.github-pat }}
