@@ -43,7 +43,7 @@ runs:
   steps:  
     - name: load variables
       id: load-vars
-      uses: myriad-actions/load-variables@main
+      uses: myriad-actions/load-variables@v2
       with:
         config-path: ${{ inputs.config-path }}
     - name: Configure AWS credentials 
