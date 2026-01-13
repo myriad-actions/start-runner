@@ -72,6 +72,8 @@ runs:
             {"Key": "CreateBy", "Value": "${{ fromJson(steps.load-vars.outputs.vars).CreateBy }}"},
             {"Key": "GitHubRepository", "Value": "${{ github.repository }}"}
           ]
+        pre-runner-script: |
+          sudo dnf install -y https://s3.eu-west-1.amazonaws.com/amazon-ssm-eu-west-1/latest/linux_amd64/amazon-ssm-agent.rpm
     - name: attach security groups
       run: aws ec2 modify-instance-attribute --instance-id ${{ steps.start-ec2-runner.outputs.ec2-instance-id }} --groups ${{ fromJson(steps.load-vars.outputs.vars).security-group-id0 }} ${{ fromJson(steps.load-vars.outputs.vars).security-group-id1 }}
       shell: bash 
