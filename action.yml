@@ -47,7 +47,7 @@ runs:
       with:
         config-path: ${{ inputs.config-path }}
     - name: Configure AWS credentials 
-      uses: aws-actions/configure-aws-credentials@master
+      uses: aws-actions/configure-aws-credentials@v5
       with:
         role-to-assume: ${{ fromJson(steps.load-vars.outputs.vars).role-to-assume }}
         aws-region: ${{ fromJson(steps.load-vars.outputs.vars).aws-region }}
