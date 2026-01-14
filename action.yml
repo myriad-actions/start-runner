@@ -8,7 +8,7 @@ description: >
 inputs:
   environment:
     description: >-
-      one of the testbed, preprod or prod envinronment, for the workflow running
+      environment used for the instance tag
     required: true
   config-path:
     description: >-
