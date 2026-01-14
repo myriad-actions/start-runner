@@ -75,7 +75,7 @@ runs:
         pre-runner-script: |
           if [ -f /usr/bin/dnf ]
             then
-              sudo dnf install -y libicu gzip
+              sudo dnf install -y libicu
               sudo dnf install -y https://s3.eu-west-1.amazonaws.com/amazon-ssm-eu-west-1/latest/linux_amd64/amazon-ssm-agent.rpm
           fi
     - name: attach security groups
