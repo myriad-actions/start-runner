@@ -1,6 +1,6 @@
 name: 'launch ec2 instance'
 description: > 
-  launch an on demande ec2 instance as github runner
+  launch an on demand ec2 instance as github runner
   following permissions are required
     permissions:
       id-token: write
@@ -58,7 +58,7 @@ runs:
         mode: start
         github-token: ${{ inputs.github-pat }}
         ec2-image-id: ${{ fromJson(steps.load-vars.outputs.vars).ec2-image-id }}
-        ec2-instance-type: ${{ inputs.instance-type }}
+        ec2-instance-type: ${{ fromJson(steps.load-vars.outputs.vars).ec2-instance-type }}
         iam-role-name: ${{ fromJson(steps.load-vars.outputs.vars).iam-role-name }}
         subnet-id: ${{ fromJson(steps.load-vars.outputs.vars).subnet-id }}
         security-group-id: ${{ fromJson(steps.load-vars.outputs.vars).security-group-id0 }}
