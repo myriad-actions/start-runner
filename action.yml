@@ -1,5 +1,5 @@
 name: 'launch ec2 instance'
-description: > 
+description: >
   launch an on demand ec2 instance as github runner
   following permissions are required
     permissions:
@@ -16,14 +16,14 @@ inputs:
     required: true
   instance-type:
     description: >-
-      aws instance type to be used 
+      aws instance type to be used
     required: false
     default: 'micro'
   github-pat:
     description: >-
       GitHub personal access token
     required: true
-    
+
 outputs:
   label:
     description: >-
@@ -37,23 +37,23 @@ outputs:
       EC2 Instance Id of the created runner.
       The id is used to terminate the EC2 instance when the runner is not needed anymore.
     value: ${{ steps.start-ec2-runner.outputs.ec2-instance-id }}
-        
+
 runs:
   using: "composite"
-  steps:  
+  steps:
     - name: load variables
       id: load-vars
       uses: myriad-actions/load-variables@v2
       with:
         config-path: ${{ inputs.config-path }}
-    - name: Configure AWS credentials 
+    - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v5
       with:
         role-to-assume: ${{ fromJson(steps.load-vars.outputs.vars).role-to-assume }}
         aws-region: ${{ fromJson(steps.load-vars.outputs.vars).aws-region }}
     - name: start ec2 runner
       id: start-ec2-runner
-      uses: machulav/ec2-github-runner@v2.4.3
+      uses: myriad-sas/ec2-github-runner@v2.4.3
       with:
         mode: start
         github-token: ${{ inputs.github-pat }}
@@ -62,7 +62,7 @@ runs:
         iam-role-name: ${{ fromJson(steps.load-vars.outputs.vars).iam-role-name }}
         subnet-id: ${{ fromJson(steps.load-vars.outputs.vars).subnet-id }}
         security-group-id: ${{ fromJson(steps.load-vars.outputs.vars).security-group-id0 }}
-        aws-resource-tags:  > 
+        aws-resource-tags:  >
           [
             {"Key": "Component", "Value": "${{ fromJson(steps.load-vars.outputs.vars).Component }}"},
             {"Key": "Name", "Value": "${{ fromJson(steps.load-vars.outputs.vars).Name }}-${{ github.run_id }}"},
@@ -79,4 +79,4 @@ runs:
           fi
     - name: attach security groups
       run: aws ec2 modify-instance-attribute --instance-id ${{ steps.start-ec2-runner.outputs.ec2-instance-id }} --groups ${{ fromJson(steps.load-vars.outputs.vars).security-group-id0 }} ${{ fromJson(steps.load-vars.outputs.vars).security-group-id1 }}
-      shell: bash 
+      shell: bash
