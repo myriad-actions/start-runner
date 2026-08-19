@@ -47,13 +47,13 @@ runs:
       with:
         config-path: ${{ inputs.config-path }}
     - name: Configure AWS credentials 
-      uses: aws-actions/configure-aws-credentials@v5
+      uses: aws-actions/configure-aws-credentials@v6
       with:
         role-to-assume: ${{ fromJson(steps.load-vars.outputs.vars).role-to-assume }}
         aws-region: ${{ fromJson(steps.load-vars.outputs.vars).aws-region }}
     - name: start ec2 runner
       id: start-ec2-runner
-      uses: machulav/ec2-github-runner@v2.4.3
+      uses: machulav/ec2-github-runner@v2.6.1
       with:
         mode: start
         github-token: ${{ inputs.github-pat }}
